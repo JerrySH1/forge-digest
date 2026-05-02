@@ -10,7 +10,7 @@ export async function fetchTrendingAiProjects(query: string): Promise<{ projects
   const headers: HeadersInit = { Accept: 'application/vnd.github+json' };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc&per_page=10`;
+  const url = `https://api.github.com/search/repositories?q=${encodeURI(query)}&sort=stars&order=desc&per_page=10`;
 
   const res = await fetch(url, { headers });
 
