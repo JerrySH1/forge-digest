@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-label: "Space Grotesk", sans-serif;
+
+  --color-surface: #0b141c;
+  --color-surface-dim: #0b141c;
+  --color-surface-bright: #313a43;
+  --color-surface-container-lowest: #060f16;
+  --color-surface-container-low: #141c24;
+  --color-surface-container: #182028;
+  --color-surface-container-high: #222b33;
+  --color-surface-container-highest: #2d363e;
+  --color-on-surface: #dae3ee;
+  --color-on-surface-variant: #c0c7d4;
+  --color-outline: #8b919d;
+  --color-outline-variant: #414752;
+  --color-primary: #a2c9ff;
+  --color-on-primary: #00315c;
+  --color-primary-container: #58a6ff;
+  --color-on-primary-container: #003a6b;
+  --color-secondary: #d5baff;
+  --color-on-secondary: #42008a;
+  --color-secondary-container: #5c2ba4;
+  --color-on-secondary-container: #c9a9ff;
+  --color-tertiary: #ffba42;
+  --color-on-tertiary: #432c00;
+  --color-tertiary-container: #da9600;
+  --color-on-tertiary-container: #4f3400;
+  
+  --radius-xl: 0.75rem;
+  --radius-lg: 0.5rem;
+  --radius-md: 0.375rem;
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-on-surface font-sans;
+  }
+}
+
+.font-label-caps {
+  font-family: var(--font-label);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
