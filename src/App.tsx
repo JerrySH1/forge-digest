@@ -23,9 +23,12 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [darkMode, setDarkMode] = useState(true);
   const [notificationOn, setNotificationOn] = useState(false);
-  const [githubToken, setGithubToken] = useState(
-    () => localStorage.getItem('GITHUB_TOKEN') || ''
-  );
+  const [githubToken, setGithubToken] = useState(() => localStorage.getItem('GITHUB_TOKEN') || '');
+  const [customTagsStr, setCustomTagsStr] = useState(() => localStorage.getItem('CUSTOM_TAGS') || TRENDING_TAGS.map(t => t.name).join(', '));
+  const [queryAgents, setQueryAgents] = useState(() => localStorage.getItem('QUERY_AGENTS') || CATEGORY_QUERIES.agents);
+  const [queryLLM, setQueryLLM] = useState(() => localStorage.getItem('QUERY_LLM') || CATEGORY_QUERIES.llm);
+  const [querySkills, setQuerySkills] = useState(() => localStorage.getItem('QUERY_SKILLS') || CATEGORY_QUERIES.skills);
+  const [dateFilter, setDateFilter] = useState(() => localStorage.getItem('DATE_FILTER') || 'default');
 
   useEffect(() => {
     if (darkMode) {
@@ -35,15 +38,39 @@ export default function App() {
     }
   }, [darkMode]);
 
+  const getDynamicQuery = useCallback((cat: Category) => {
+    let base = '';
+    if (cat === 'trending') base = CATEGORY_QUERIES.trending;
+    else if (cat === 'agents') base = queryAgents;
+    else if (cat === 'llm') base = queryLLM;
+    else if (cat === 'skills') base = querySkills;
+
+    if (dateFilter !== 'default') {
+      base = base.replace(/(pushed|created):[^\s]+/g, '').trim();
+      const d = new Date();
+      if (dateFilter === 'created_last_month') {
+        d.setMonth(d.getMonth() - 1);
+        base += ` created:>${d.toISOString().split('T')[0]}`;
+      } else if (dateFilter === 'created_last_week') {
+        d.setDate(d.getDate() - 7);
+        base += ` created:>${d.toISOString().split('T')[0]}`;
+      } else if (dateFilter === 'pushed_last_month') {
+        d.setMonth(d.getMonth() - 1);
+        base += ` pushed:>${d.toISOString().split('T')[0]}`;
+      }
+    }
+    return base;
+  }, [queryAgents, queryLLM, querySkills, dateFilter]);
+
   const loadProjects = useCallback(async (cat: Category) => {
     setIsLoading(true);
     setError(null);
-    const query = CATEGORY_QUERIES[cat];
+    const query = getDynamicQuery(cat);
     const result = await fetchTrendingAiProjects(query);
     setProjects(result.projects);
     setError(result.error || null);
     setIsLoading(false);
-  }, []);
+  }, [getDynamicQuery]);
 
   useEffect(() => {
     loadProjects(category);
@@ -64,12 +91,27 @@ export default function App() {
     setSearchQuery(tag);
   }, []);
 
-  const handleSaveToken = useCallback((token: string) => {
-    localStorage.setItem('GITHUB_TOKEN', token);
-    setGithubToken(token);
+  const handleSaveSettings = useCallback((newSettings: any) => {
+    localStorage.setItem('GITHUB_TOKEN', newSettings.token);
+    localStorage.setItem('CUSTOM_TAGS', newSettings.customTagsStr);
+    localStorage.setItem('QUERY_AGENTS', newSettings.queryAgents);
+    localStorage.setItem('QUERY_LLM', newSettings.queryLLM);
+    localStorage.setItem('QUERY_SKILLS', newSettings.querySkills);
+    localStorage.setItem('DATE_FILTER', newSettings.dateFilter);
+    
+    setGithubToken(newSettings.token);
+    setCustomTagsStr(newSettings.customTagsStr);
+    setQueryAgents(newSettings.queryAgents);
+    setQueryLLM(newSettings.queryLLM);
+    setQuerySkills(newSettings.querySkills);
+    setDateFilter(newSettings.dateFilter);
+    
     setIsSettingsOpen(false);
-    loadProjects(category);
-  }, [category, loadProjects]);
+  }, []);
+
+  const tagsList = useMemo(() => {
+    return customTagsStr.split(',').map(s => s.trim()).filter(Boolean).map(name => ({ name }));
+  }, [customTagsStr]);
 
   const t = {
     zh: {
@@ -190,7 +232,7 @@ export default function App() {
               </div>
             </section>
 
-            <TagCloud tags={TRENDING_TAGS} language={language} onTagClick={handleTagClick} />
+            <TagCloud tags={tagsList} language={language} onTagClick={handleTagClick} onEditClick={() => setIsSettingsOpen(true)} />
           </aside>
         </div>
       </main>
@@ -200,8 +242,15 @@ export default function App() {
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
-        githubToken={githubToken}
-        onSaveToken={handleSaveToken}
+        initialSettings={{
+          token: githubToken,
+          customTagsStr,
+          queryAgents,
+          queryLLM,
+          querySkills,
+          dateFilter,
+        }}
+        onSaveSettings={handleSaveSettings}
         darkMode={darkMode}
         onToggleDarkMode={() => setDarkMode((v) => !v)}
       />

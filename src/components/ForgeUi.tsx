@@ -342,10 +342,12 @@ export const TagCloud = ({
   tags,
   language,
   onTagClick,
+  onEditClick,
 }: {
   tags: Tag[];
   language: 'zh' | 'en';
   onTagClick: (tag: string) => void;
+  onEditClick?: () => void;
 }) => {
   return (
     <section className="mt-12">
@@ -354,6 +356,7 @@ export const TagCloud = ({
           {language === 'zh' ? '热门标签' : 'Hot Tags'}
         </h2>
         <button
+          onClick={onEditClick}
           className="text-outline hover:text-primary-container transition-colors p-1"
           title={language === 'zh' ? '管理标签' : 'Manage tags'}
         >
@@ -380,22 +383,26 @@ export const TagCloud = ({
 export const SettingsModal = ({
   isOpen,
   onClose,
-  githubToken,
-  onSaveToken,
+  initialSettings,
+  onSaveSettings,
   darkMode,
   onToggleDarkMode,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  githubToken: string;
-  onSaveToken: (token: string) => void;
+  initialSettings: any;
+  onSaveSettings: (settings: any) => void;
   darkMode: boolean;
   onToggleDarkMode: () => void;
 }) => {
-  const [token, setToken] = useState(githubToken);
+  const [settings, setSettings] = React.useState(initialSettings);
+
+  React.useEffect(() => {
+    if (isOpen) setSettings(initialSettings);
+  }, [isOpen, initialSettings]);
 
   const handleSave = () => {
-    onSaveToken(token);
+    onSaveSettings(settings);
   };
 
   return (
@@ -413,9 +420,9 @@ export const SettingsModal = ({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="bg-surface-container border border-outline-variant rounded-2xl w-full max-w-md overflow-hidden relative z-10"
+            className="bg-surface-container border border-outline-variant rounded-2xl w-full max-w-md overflow-hidden relative z-10 flex flex-col max-h-[90vh]"
           >
-            <div className="p-6 border-b border-outline-variant flex justify-between items-center bg-surface-container-high">
+            <div className="p-6 border-b border-outline-variant flex justify-between items-center bg-surface-container-high shrink-0">
               <h2 className="text-xl font-bold text-on-surface">Settings</h2>
               <button
                 onClick={onClose}
@@ -425,7 +432,7 @@ export const SettingsModal = ({
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="p-6 space-y-6 overflow-y-auto">
               <div className="space-y-4">
                 <h3 className="text-xs font-bold font-label-caps text-primary-container">
                   API Configuration
@@ -436,22 +443,78 @@ export const SettingsModal = ({
                   </label>
                   <input
                     type="password"
-                    value={token}
-                    onChange={(e) => setToken(e.target.value)}
+                    value={settings.token}
+                    onChange={(e) => setSettings({ ...settings, token: e.target.value })}
                     placeholder="ghp_xxxxxxxxxxxx"
                     className="w-full bg-surface-container-lowest border border-outline-variant rounded-md px-4 py-2 text-sm text-on-surface focus:outline-none focus:border-primary-container transition-all"
                   />
                   <p className="text-[10px] text-outline">
-                    Optional. Adds higher rate limits (5000 req/h vs 60 req/h).{' '}
-                    <a
-                      href="https://github.com/settings/tokens"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary-container hover:underline"
-                    >
-                      Create one here &rarr;
-                    </a>
+                    Optional. Adds higher rate limits (5000 req/h vs 60 req/h).
                   </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-xs font-bold font-label-caps text-primary-container">
+                  Search & Filters
+                </h3>
+                
+                <div className="space-y-2">
+                  <label className="text-xs text-outline font-bold uppercase">Trending Date Range</label>
+                  <select
+                    value={settings.dateFilter}
+                    onChange={(e) => setSettings({ ...settings, dateFilter: e.target.value })}
+                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-md px-4 py-2 text-sm text-on-surface focus:outline-none focus:border-primary-container transition-all"
+                  >
+                    <option value="default">All Time (Default)</option>
+                    <option value="created_last_week">Top New (Created Last Week)</option>
+                    <option value="created_last_month">Top New (Created Last Month)</option>
+                    <option value="pushed_last_month">Recently Active (Pushed Last Month)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs text-outline font-bold uppercase">Custom Tags (Comma Separated)</label>
+                  <input
+                    type="text"
+                    value={settings.customTagsStr}
+                    onChange={(e) => setSettings({ ...settings, customTagsStr: e.target.value })}
+                    placeholder="Agent, LLM, ..."
+                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-md px-4 py-2 text-sm text-on-surface focus:outline-none focus:border-primary-container transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-xs font-bold font-label-caps text-primary-container">
+                  Custom Queries
+                </h3>
+                <div className="space-y-2">
+                  <label className="text-xs text-outline font-bold uppercase">Agents Tab</label>
+                  <input
+                    type="text"
+                    value={settings.queryAgents}
+                    onChange={(e) => setSettings({ ...settings, queryAgents: e.target.value })}
+                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-md px-4 py-2 text-sm text-on-surface focus:outline-none focus:border-primary-container transition-all font-mono"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs text-outline font-bold uppercase">LLM Tab</label>
+                  <input
+                    type="text"
+                    value={settings.queryLLM}
+                    onChange={(e) => setSettings({ ...settings, queryLLM: e.target.value })}
+                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-md px-4 py-2 text-sm text-on-surface focus:outline-none focus:border-primary-container transition-all font-mono"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs text-outline font-bold uppercase">Skills Tab</label>
+                  <input
+                    type="text"
+                    value={settings.querySkills}
+                    onChange={(e) => setSettings({ ...settings, querySkills: e.target.value })}
+                    className="w-full bg-surface-container-lowest border border-outline-variant rounded-md px-4 py-2 text-sm text-on-surface focus:outline-none focus:border-primary-container transition-all font-mono"
+                  />
                 </div>
               </div>
 
@@ -477,7 +540,7 @@ export const SettingsModal = ({
               </div>
             </div>
 
-            <div className="p-6 bg-surface-container-high border-t border-outline-variant flex justify-end gap-3">
+            <div className="p-6 bg-surface-container-high border-t border-outline-variant flex justify-end gap-3 shrink-0">
               <button
                 onClick={onClose}
                 className="px-4 py-2 text-sm text-on-surface-variant hover:text-on-surface transition-colors"
