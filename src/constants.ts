@@ -62,10 +62,10 @@ export const TRENDING_TAGS: Tag[] = [
 export type Category = 'trending' | 'agents' | 'llm' | 'skills';
 
 export const CATEGORY_QUERIES: Record<Category, string> = {
-  trending: 'topic:artificial-intelligence+language:python+language:typescript+pushed:>2024-01-01',
-  agents: 'topic:ai-agent+topic:llm+pushed:>2024-01-01',
-  llm: 'topic:large-language-model+topic:llm+pushed:>2024-01-01',
-  skills: 'topic:machine-learning+topic:deep-learning+pushed:>2024-01-01',
+  trending: 'topic:artificial-intelligence language:python language:typescript pushed:>2024-01-01',
+  agents: 'topic:ai-agent topic:llm pushed:>2024-01-01',
+  llm: 'topic:large-language-model topic:llm pushed:>2024-01-01',
+  skills: 'topic:machine-learning topic:deep-learning pushed:>2024-01-01',
 };
 
 export const CATEGORY_LABELS: Record<Category, { zh: string; en: string }> = {
