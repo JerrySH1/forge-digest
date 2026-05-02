@@ -7,30 +7,30 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-label: "Space Grotesk", sans-serif;
 
-  --color-surface: #0b141c;
-  --color-surface-dim: #0b141c;
-  --color-surface-bright: #313a43;
-  --color-surface-container-lowest: #060f16;
-  --color-surface-container-low: #141c24;
-  --color-surface-container: #182028;
-  --color-surface-container-high: #222b33;
-  --color-surface-container-highest: #2d363e;
-  --color-on-surface: #dae3ee;
-  --color-on-surface-variant: #c0c7d4;
-  --color-outline: #8b919d;
-  --color-outline-variant: #414752;
-  --color-primary: #a2c9ff;
-  --color-on-primary: #00315c;
-  --color-primary-container: #58a6ff;
-  --color-on-primary-container: #003a6b;
-  --color-secondary: #d5baff;
-  --color-on-secondary: #42008a;
-  --color-secondary-container: #5c2ba4;
-  --color-on-secondary-container: #c9a9ff;
-  --color-tertiary: #ffba42;
-  --color-on-tertiary: #432c00;
-  --color-tertiary-container: #da9600;
-  --color-on-tertiary-container: #4f3400;
+  --color-surface: var(--surface);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-secondary: var(--secondary);
+  --color-on-secondary: var(--on-secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+  --color-tertiary: var(--tertiary);
+  --color-on-tertiary: var(--on-tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary-container: var(--on-tertiary-container);
   
   --radius-xl: 0.75rem;
   --radius-lg: 0.5rem;
@@ -38,8 +38,62 @@
 }
 
 @layer base {
+  :root {
+    --surface: #ffffff;
+    --surface-dim: #f3f4f6;
+    --surface-bright: #ffffff;
+    --surface-container-lowest: #ffffff;
+    --surface-container-low: #f9fafb;
+    --surface-container: #f3f4f6;
+    --surface-container-high: #e5e7eb;
+    --surface-container-highest: #d1d5db;
+    --on-surface: #111827;
+    --on-surface-variant: #4b5563;
+    --outline: #9ca3af;
+    --outline-variant: #d1d5db;
+    --primary: #0969da;
+    --on-primary: #ffffff;
+    --primary-container: #0969da;
+    --on-primary-container: #ffffff;
+    --secondary: #8250df;
+    --on-secondary: #ffffff;
+    --secondary-container: #8250df;
+    --on-secondary-container: #ffffff;
+    --tertiary: #bf8700;
+    --on-tertiary: #ffffff;
+    --tertiary-container: #bf8700;
+    --on-tertiary-container: #ffffff;
+  }
+
+  .dark {
+    --surface: #0b141c;
+    --surface-dim: #0b141c;
+    --surface-bright: #313a43;
+    --surface-container-lowest: #060f16;
+    --surface-container-low: #141c24;
+    --surface-container: #182028;
+    --surface-container-high: #222b33;
+    --surface-container-highest: #2d363e;
+    --on-surface: #dae3ee;
+    --on-surface-variant: #c0c7d4;
+    --outline: #8b919d;
+    --outline-variant: #414752;
+    --primary: #a2c9ff;
+    --on-primary: #00315c;
+    --primary-container: #58a6ff;
+    --on-primary-container: #003a6b;
+    --secondary: #d5baff;
+    --on-secondary: #42008a;
+    --secondary-container: #5c2ba4;
+    --on-secondary-container: #c9a9ff;
+    --tertiary: #ffba42;
+    --on-tertiary: #432c00;
+    --tertiary-container: #da9600;
+    --on-tertiary-container: #4f3400;
+  }
+
   body {
-    @apply bg-surface text-on-surface font-sans;
+    @apply bg-surface text-on-surface font-sans transition-colors duration-200;
   }
 }
 

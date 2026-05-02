@@ -32,8 +32,6 @@ export const Header = ({
   onToggleLanguage,
   category,
   onCategoryChange,
-  notificationOn,
-  onToggleNotification,
 }: {
   searchQuery: string;
   onSearchChange: (val: string) => void;
@@ -42,12 +40,10 @@ export const Header = ({
   onToggleLanguage: () => void;
   category: Category;
   onCategoryChange: (c: Category) => void;
-  notificationOn: boolean;
-  onToggleNotification: () => void;
 }) => {
   const t = {
-    zh: { placeholder: '搜索项目...', subscribe: '订阅' },
-    en: { placeholder: 'Search projects...', subscribe: 'Subscribe' },
+    zh: { placeholder: '搜索项目...' },
+    en: { placeholder: 'Search projects...' },
   }[language];
 
   const categories: Category[] = ['trending', 'agents', 'llm', 'skills'];
@@ -111,29 +107,10 @@ export const Header = ({
           </button>
 
           <button
-            onClick={onToggleNotification}
-            className={`transition-colors p-1.5 rounded-md hover:bg-surface-container flex items-center justify-center ${
-              notificationOn ? 'text-primary-container' : 'text-outline hover:text-on-surface'
-            }`}
-            title={notificationOn ? '通知已开启' : '通知已关闭'}
-          >
-            {notificationOn ? <BellRing className="w-5 h-5" /> : <Bell className="w-5 h-5" />}
-          </button>
-
-          <button
             onClick={onOpenSettings}
             className="text-outline hover:text-on-surface transition-colors p-1.5 rounded-md hover:bg-surface-container flex items-center justify-center"
           >
             <Settings className="w-5 h-5" />
-          </button>
-
-          <button
-            onClick={() =>
-              document.getElementById('subscribe-section')?.scrollIntoView({ behavior: 'smooth' })
-            }
-            className="bg-primary-container text-on-primary-container px-4 py-1.5 rounded-md text-sm font-medium hover:bg-primary transition-colors ml-2 hidden md:block"
-          >
-            {t.subscribe}
           </button>
         </div>
       </div>
@@ -273,41 +250,44 @@ export const SubscriptionSection = ({ language }: { language: 'zh' | 'en' }) => 
   return (
     <section
       id="subscribe-section"
-      className="mt-12 bg-surface-container-high border border-outline-variant rounded-xl p-6 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8"
+      className="mt-6 border-t border-outline-variant pt-6 flex flex-col gap-4"
     >
-      <div className="max-w-md w-full">
-        <h3 className="text-2xl font-semibold text-on-surface mb-2">{t.title}</h3>
-        <p className="text-sm text-on-surface-variant">{t.desc}</p>
+      <div className="w-full">
+        <h3 className="text-sm font-bold font-label-caps text-primary-container mb-1">{t.title}</h3>
+        <p className="text-[10px] text-outline leading-snug">{t.desc}</p>
       </div>
 
       <div className="flex flex-col w-full md:w-auto gap-4">
-        <div className="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant rounded-lg p-1 w-full md:w-fit self-end overflow-hidden">
+        <div className="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant rounded-lg p-1 w-full overflow-hidden">
           {CHANNELS.map((ch) => {
             const Icon = ch.icon;
             const isActive = channel === ch.id;
             return (
               <button
                 key={ch.id}
-                onClick={() => setChannel(ch.id)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                onClick={(e) => {
+                  e.preventDefault();
+                  setChannel(ch.id);
+                }}
+                className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium transition-all ${
                   isActive
                     ? 'bg-primary-container/10 text-primary-container border border-primary-container/20'
                     : 'hover:bg-surface-bright text-outline hover:text-on-surface'
                 }`}
               >
-                <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{ch.label[language]}</span>
+                <Icon className="w-3.5 h-3.5" />
+                <span>{ch.label[language]}</span>
               </button>
             );
           })}
         </div>
 
-        <form className="flex w-full md:w-auto gap-2" onSubmit={handleSubmit}>
-          <div className="relative flex-grow md:w-80">
+        <form className="flex w-full gap-2" onSubmit={handleSubmit}>
+          <div className="relative flex-grow">
             <input
-              className="w-full bg-surface-container-lowest border border-outline-variant rounded-md px-4 py-2.5 text-sm focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container text-on-surface placeholder:text-outline transition-all disabled:opacity-50"
+              className="w-full bg-surface-container-lowest border border-outline-variant rounded-md px-3 py-2 text-sm focus:outline-none focus:border-primary-container text-on-surface placeholder:text-outline transition-all disabled:opacity-50"
               placeholder={status === 'success' ? t.success : t.placeholder}
-              type="email"
+              type={channel === 'email' ? 'email' : 'text'}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={status !== 'idle'}
@@ -316,7 +296,7 @@ export const SubscriptionSection = ({ language }: { language: 'zh' | 'en' }) => 
           <button
             type="submit"
             disabled={status !== 'idle'}
-            className="bg-primary-container text-on-primary-container px-8 py-2.5 rounded-md font-bold text-xs uppercase tracking-wider hover:bg-primary transition-all shadow-lg shadow-primary-container/20 active:scale-95 disabled:opacity-50 flex items-center gap-2 justify-center min-w-[120px]"
+            className="bg-primary-container text-on-primary-container px-4 py-2 rounded-md font-bold text-[11px] uppercase tracking-wider hover:bg-primary transition-all shadow-lg shadow-primary-container/20 active:scale-95 disabled:opacity-50 flex items-center justify-center min-w-[80px]"
           >
             {status === 'loading' ? (
               <motion.div
@@ -387,6 +367,7 @@ export const SettingsModal = ({
   onSaveSettings,
   darkMode,
   onToggleDarkMode,
+  language,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -394,6 +375,7 @@ export const SettingsModal = ({
   onSaveSettings: (settings: any) => void;
   darkMode: boolean;
   onToggleDarkMode: () => void;
+  language: 'zh' | 'en';
 }) => {
   const [settings, setSettings] = React.useState(initialSettings);
 
@@ -404,6 +386,51 @@ export const SettingsModal = ({
   const handleSave = () => {
     onSaveSettings(settings);
   };
+
+  const t = {
+    zh: {
+      title: '设置',
+      apiConfig: 'API 配置',
+      ghToken: 'GitHub 个人访问令牌',
+      ghTokenDesc: '可选。提升请求限额 (5000 次/小时 vs 60 次/小时)。',
+      searchFilters: '搜索与过滤',
+      dateRange: '趋势时间范围',
+      dateOptAll: '所有时间 (默认)',
+      dateOptWeek: '近期爆款 (最近一周创建)',
+      dateOptMonth: '近期爆款 (最近一月创建)',
+      dateOptActive: '近期活跃 (最近一月更新)',
+      customTags: '自定义热门标签 (逗号分隔)',
+      customQueries: '自定义搜索查询',
+      agentsTab: '智能体 (Agents) 标签',
+      llmTab: '大模型 (LLM) 标签',
+      skillsTab: '技能 (Skills) 标签',
+      appearance: '外观',
+      darkMode: '深色模式',
+      cancel: '取消',
+      save: '保存',
+    },
+    en: {
+      title: 'Settings',
+      apiConfig: 'API Configuration',
+      ghToken: 'GitHub Personal Access Token',
+      ghTokenDesc: 'Optional. Adds higher rate limits (5000 req/h vs 60 req/h).',
+      searchFilters: 'Search & Filters',
+      dateRange: 'Trending Date Range',
+      dateOptAll: 'All Time (Default)',
+      dateOptWeek: 'Top New (Created Last Week)',
+      dateOptMonth: 'Top New (Created Last Month)',
+      dateOptActive: 'Recently Active (Pushed Last Month)',
+      customTags: 'Custom Tags (Comma Separated)',
+      customQueries: 'Custom Queries',
+      agentsTab: 'Agents Tab',
+      llmTab: 'LLM Tab',
+      skillsTab: 'Skills Tab',
+      appearance: 'Appearance',
+      darkMode: 'Dark Mode',
+      cancel: 'Cancel',
+      save: 'Save',
+    },
+  }[language];
 
   return (
     <AnimatePresence>
@@ -423,7 +450,7 @@ export const SettingsModal = ({
             className="bg-surface-container border border-outline-variant rounded-2xl w-full max-w-md overflow-hidden relative z-10 flex flex-col max-h-[90vh]"
           >
             <div className="p-6 border-b border-outline-variant flex justify-between items-center bg-surface-container-high shrink-0">
-              <h2 className="text-xl font-bold text-on-surface">Settings</h2>
+              <h2 className="text-xl font-bold text-on-surface">{t.title}</h2>
               <button
                 onClick={onClose}
                 className="p-1 hover:bg-surface-bright rounded-md text-outline hover:text-on-surface transition-colors"
@@ -435,11 +462,11 @@ export const SettingsModal = ({
             <div className="p-6 space-y-6 overflow-y-auto">
               <div className="space-y-4">
                 <h3 className="text-xs font-bold font-label-caps text-primary-container">
-                  API Configuration
+                  {t.apiConfig}
                 </h3>
                 <div className="space-y-2">
                   <label className="text-xs text-outline font-bold uppercase">
-                    GitHub Personal Access Token
+                    {t.ghToken}
                   </label>
                   <input
                     type="password"
@@ -449,32 +476,32 @@ export const SettingsModal = ({
                     className="w-full bg-surface-container-lowest border border-outline-variant rounded-md px-4 py-2 text-sm text-on-surface focus:outline-none focus:border-primary-container transition-all"
                   />
                   <p className="text-[10px] text-outline">
-                    Optional. Adds higher rate limits (5000 req/h vs 60 req/h).
+                    {t.ghTokenDesc}
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <h3 className="text-xs font-bold font-label-caps text-primary-container">
-                  Search & Filters
+                  {t.searchFilters}
                 </h3>
                 
                 <div className="space-y-2">
-                  <label className="text-xs text-outline font-bold uppercase">Trending Date Range</label>
+                  <label className="text-xs text-outline font-bold uppercase">{t.dateRange}</label>
                   <select
                     value={settings.dateFilter}
                     onChange={(e) => setSettings({ ...settings, dateFilter: e.target.value })}
                     className="w-full bg-surface-container-lowest border border-outline-variant rounded-md px-4 py-2 text-sm text-on-surface focus:outline-none focus:border-primary-container transition-all"
                   >
-                    <option value="default">All Time (Default)</option>
-                    <option value="created_last_week">Top New (Created Last Week)</option>
-                    <option value="created_last_month">Top New (Created Last Month)</option>
-                    <option value="pushed_last_month">Recently Active (Pushed Last Month)</option>
+                    <option value="default">{t.dateOptAll}</option>
+                    <option value="created_last_week">{t.dateOptWeek}</option>
+                    <option value="created_last_month">{t.dateOptMonth}</option>
+                    <option value="pushed_last_month">{t.dateOptActive}</option>
                   </select>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-xs text-outline font-bold uppercase">Custom Tags (Comma Separated)</label>
+                  <label className="text-xs text-outline font-bold uppercase">{t.customTags}</label>
                   <input
                     type="text"
                     value={settings.customTagsStr}
@@ -487,10 +514,10 @@ export const SettingsModal = ({
 
               <div className="space-y-4">
                 <h3 className="text-xs font-bold font-label-caps text-primary-container">
-                  Custom Queries
+                  {t.customQueries}
                 </h3>
                 <div className="space-y-2">
-                  <label className="text-xs text-outline font-bold uppercase">Agents Tab</label>
+                  <label className="text-xs text-outline font-bold uppercase">{t.agentsTab}</label>
                   <input
                     type="text"
                     value={settings.queryAgents}
@@ -499,7 +526,7 @@ export const SettingsModal = ({
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs text-outline font-bold uppercase">LLM Tab</label>
+                  <label className="text-xs text-outline font-bold uppercase">{t.llmTab}</label>
                   <input
                     type="text"
                     value={settings.queryLLM}
@@ -508,7 +535,7 @@ export const SettingsModal = ({
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs text-outline font-bold uppercase">Skills Tab</label>
+                  <label className="text-xs text-outline font-bold uppercase">{t.skillsTab}</label>
                   <input
                     type="text"
                     value={settings.querySkills}
@@ -520,10 +547,10 @@ export const SettingsModal = ({
 
               <div className="space-y-4">
                 <h3 className="text-xs font-bold font-label-caps text-primary-container">
-                  Appearance
+                  {t.appearance}
                 </h3>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-on-surface font-medium">Dark Mode</span>
+                  <span className="text-sm text-on-surface font-medium">{t.darkMode}</span>
                   <button
                     onClick={onToggleDarkMode}
                     className={`w-12 h-7 rounded-full relative transition-colors ${
@@ -538,6 +565,8 @@ export const SettingsModal = ({
                   </button>
                 </div>
               </div>
+
+              <SubscriptionSection language={language} />
             </div>
 
             <div className="p-6 bg-surface-container-high border-t border-outline-variant flex justify-end gap-3 shrink-0">
@@ -545,13 +574,13 @@ export const SettingsModal = ({
                 onClick={onClose}
                 className="px-4 py-2 text-sm text-on-surface-variant hover:text-on-surface transition-colors"
               >
-                Cancel
+                {t.cancel}
               </button>
               <button
                 onClick={handleSave}
                 className="bg-primary-container text-on-primary-container px-6 py-2 rounded-lg font-bold text-xs uppercase tracking-wider hover:bg-primary transition-all"
               >
-                Save
+                {t.save}
               </button>
             </div>
           </motion.div>

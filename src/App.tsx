@@ -22,7 +22,6 @@ export default function App() {
   const [category, setCategory] = useState<Category>('trending');
   const [error, setError] = useState<string | null>(null);
   const [darkMode, setDarkMode] = useState(true);
-  const [notificationOn, setNotificationOn] = useState(false);
   const [githubToken, setGithubToken] = useState(() => localStorage.getItem('GITHUB_TOKEN') || '');
   const [customTagsStr, setCustomTagsStr] = useState(() => localStorage.getItem('CUSTOM_TAGS') || TRENDING_TAGS.map(t => t.name).join(', '));
   const [queryAgents, setQueryAgents] = useState(() => localStorage.getItem('QUERY_AGENTS') || CATEGORY_QUERIES.agents);
@@ -140,8 +139,6 @@ export default function App() {
         onToggleLanguage={() => setLanguage((prev) => (prev === 'zh' ? 'en' : 'zh'))}
         category={category}
         onCategoryChange={setCategory}
-        notificationOn={notificationOn}
-        onToggleNotification={() => setNotificationOn((v) => !v)}
       />
 
       <main className="flex-grow w-full max-w-[1280px] mx-auto px-6 py-12">
@@ -215,8 +212,6 @@ export default function App() {
                 )}
               </AnimatePresence>
             </div>
-
-            <SubscriptionSection language={language} />
           </div>
 
           <aside className="lg:col-span-1">
@@ -253,6 +248,7 @@ export default function App() {
         onSaveSettings={handleSaveSettings}
         darkMode={darkMode}
         onToggleDarkMode={() => setDarkMode((v) => !v)}
+        language={language}
       />
     </div>
   );
