@@ -5,7 +5,10 @@
       "Bash(npm run *)",
       "Bash(npm ls *)",
       "Bash(npx tsc *)",
-      "Bash(node -e \"const p = require\\('/Users/jerry/Desktop/forge-digest/node_modules/react/package.json'\\); console.log\\('types:', p.types\\); console.log\\('exports:', JSON.stringify\\(p.exports, null, 2\\)\\)\")"
+      "Bash(node -e \"const p = require\\('/Users/jerry/Desktop/forge-digest/node_modules/react/package.json'\\); console.log\\('types:', p.types\\); console.log\\('exports:', JSON.stringify\\(p.exports, null, 2\\)\\)\")",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
